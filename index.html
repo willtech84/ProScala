@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<!--
+ProScala – Produto Comercial Nível 1 (Departamental – Radiologia)
+Desenvolvido por Willtech Soluções Digitais
+Suporte: WhatsApp (47) 98908-8181 • suporteproscala@gmail.com
+Versão: 1.1.4 (Premium Print/PDF) | Build: 2026-01-30
+
+Slogan: Escalas e Sobreaviso com Controle Total
+Observação (Nível 1): funcionamento local/offline via navegador (PWA opcional).
+-->
+<html lang="pt-br">
+<head>
+  <link rel="manifest" href="manifest.json">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ProScala – Controle de Sobreaviso (Radiologia)</title>
+
+  <style>
+    :root{
+      --primary:#0b5ed7;
+      --primary-2:#084298;
+      --accent:#22c55e;
+      --success:#198754;
+      --warning:#fd7e14;
+      --danger:#dc3545;
+      --dark:#111827;
+      --bg1:#eef1f5;
+      --bg2:#dbeafe;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --border:#d1d5db;
+      --shadow: 0 10px 30px rgba(0,0,0,.10);
+      --radius: 14px;
+    }
+    *{box-sizing:border-box}
+    body{font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));margin:0;padding:14px;color:#111}
+    .container{max-width:1250px;margin:auto;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
+
+    header.top{
+      display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
+      border-bottom:4px solid var(--primary);
+      padding:14px;
+      border-radius:var(--radius);
+      background:linear-gradient(90deg, rgba(11,94,215,.06), rgba(34,197,94,.06));
+    }
+    .brand{display:flex;flex-direction:column;gap:6px}
+    .meta{font-size:11px;color:var(--muted)}
+
+    .logoRow{display:flex;align-items:center;gap:14px}
+    .logoMark{
+      width:52px;height:52px;border-radius:16px;
+      background:linear-gradient(135deg,var(--primary),#2563eb);
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 12px 24px rgba(11,94,215,.25);
+      position:relative;overflow:hidden;
+    }
+    .logoMark::after{
+      content:"";
+      position:absolute;inset:-12px;
+      background:linear-gradient(135deg, rgba(34,197,94,.35), rgba(255,255,255,0));
+      transform:rotate(25deg);
+    }
+    .logoMark span{font-weight:900;color:#fff;font-size:22px;line-height:1;position:relative}
+
+    .brand h1{margin:0;font-size:1.65rem;color:var(--primary);letter-spacing:.3px}
+    .brand small{color:#374151;font-weight:600}
+
+    .brandSlogan{
+      font-size:.78rem;
+      font-weight:900;
+      color:#0f172a;
+      display:flex;align-items:center;gap:8px;
+    }
+    .brandSlogan .pill{
+      background:rgba(34,197,94,.14);
+      border:1px solid rgba(34,197,94,.25);
+      padding:4px 10px;border-radius:999px;
+      color:#14532d;
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+
+    .btnbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    button{cursor:pointer;border:none;border-radius:10px;padding:10px 14px;font-weight:900;font-size:.88rem}
+    button:hover{filter:brightness(0.97)}
+    .btn-primary{background:var(--primary);color:#fff}
+    .btn-success{background:var(--success);color:#fff}
+    .btn-warning{background:var(--warning);color:#fff}
+    .btn-danger{background:var(--danger);color:#fff}
+    .btn-dark{background:var(--dark);color:#fff}
+    .btn-ghost{background:#eef2ff;color:#111;border:1px solid #dbeafe}
+
+    .section{margin-top:22px}
+    .section h2{font-size:1.05rem;color:#111;border-left:5px solid var(--primary);padding-left:10px;margin:0 0 10px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+
+    label{font-size:.75rem;font-weight:900;color:#374151}
+    input,select{padding:10px;border:1px solid var(--border);border-radius:10px;font-size:.92rem;width:100%}
+    input:focus,select:focus{outline:2px solid #93c5fd;outline-offset:1px}
+
+    table{width:100%;border-collapse:collapse;margin-top:12px;font-size:.86rem;border-radius:12px;overflow:hidden}
+    th,td{border:1px solid var(--border);padding:8px;vertical-align:top}
+    th{background:var(--primary);color:#fff;letter-spacing:.3px}
+    td .mini{padding:7px 11px;border-radius:9px;font-weight:900;font-size:.78rem}
+
+    .viewbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:8px}
+    .viewbar label{display:flex;gap:8px;align-items:center;font-size:.8rem}
+    .viewbar input[type="checkbox"]{width:auto;transform:scale(1.1)}
+    .group-row{background:#eef2ff;font-weight:900}
+    .group-sub{background:#f8fafc}
+    .subnote{font-size:.78rem;color:var(--muted);font-weight:800}
+
+    .preview{background:#f8fafc;border:1px dashed #94a3b8;border-radius:12px;padding:14px;margin-top:10px;font-weight:900;line-height:1.4}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+
+    /* MODAIS */
+    .modalMask{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;z-index:9999}
+    .modal{background:#fff;max-width:760px;width:calc(100% - 28px);border-radius:16px;padding:22px;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+    .modal h3{margin:0 0 10px}
+    .modal p{margin:6px 0;color:#111}
+
+    /* IMPRESSÃO PREMIUM */
+    #print-relatorio,#print-fichas{display:none}
+    @media print{
+      @page{margin:0.6cm}
+      body{background:#fff}
+      .container{display:none !important}
+      #print-relatorio.active,#print-fichas.active{display:block !important}
+
+      #print-relatorio{padding:26px}
+      #print-relatorio header{border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:12px}
+      #print-relatorio h1{font-size:18pt}
+      #print-relatorio h2{font-size:11pt}
+
+      /* Fichas 3 por A4 – premium */
+      .ficha{height:9.25cm;border:1px solid #000;padding:12px 14px;margin-bottom:0.25cm;page-break-inside:avoid}
+      .ficha:nth-child(3n){page-break-after:always}
+    }
+
+    #print-relatorio{position:fixed;inset:0;background:#fff;padding:34px;font-family:Arial}
+    #print-relatorio header{border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:14px}
+    #print-relatorio .topline{display:flex;justify-content:space-between;gap:10px;font-size:12px}
+    #print-relatorio h1{margin:8px 0 0;font-size:20px}
+    #print-relatorio h2{margin:4px 0 0;font-size:13px;font-weight:normal}
+    #print-relatorio .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+    #print-relatorio .box{border:1px solid #000;padding:8px;font-size:13px}
+    #print-relatorio footer{margin-top:18px;font-size:11px}
+    #print-relatorio .assinaturas{margin-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end}
+    #print-relatorio .assinaturas .sigBox{border-top:1px solid #000;padding-top:6px;text-align:center;font-size:12px;min-height:70px}
+    #print-relatorio .sigBox img{max-height:55px;max-width:100%}
+  </style>
+</head>
+<body>
+
+<!-- LICENÇA -->
+<div id="licModal" class="modalMask">
+  <div class="modal">
+    <h3>ProScala – Ativação de Licença</h3>
+    <p>Este sistema está protegido por licença (uso institucional conforme contrato).</p>
+    <div class="grid" style="margin-top:12px">
+      <div>
+        <label>Chave de ativação</label>
+        <input id="licKeyInput" placeholder="Ex: PROSCALA-N1-2026" />
+      </div>
+    </div>
+    <div class="row" style="margin-top:12px;justify-content:flex-end">
+      <button class="btn-primary" onclick="License.activate()">Ativar</button>
+    </div>
+    <p class="meta" style="margin-top:10px">Suporte: WhatsApp (47) 98908-8181 • suporteproscala@gmail.com</p>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div id="loginModal" class="modalMask">
+  <div class="modal" style="max-width:420px">
+    <h3>Login</h3>
+    <div class="grid" style="margin-top:12px">
+      <div><label>Usuário</label><input id="lg_user" autocomplete="username" /></div>
+      <div><label>Senha</label><input id="lg_pass" type="password" autocomplete="current-password" /></div>
+    </div>
+    <div class="row" style="margin-top:12px;justify-content:flex-end">
+      <button class="btn-primary" onclick="Auth.login()">Entrar</button>
+    </div>
+    <p class="meta" style="margin-top:10px">ProScala 1.1.4 • Desenvolvido por Willtech Soluções Digitais</p>
+  </div>
+</div>
+
+<!-- TERMO -->
+<div id="termoModal" class="modalMask">
+  <div class="modal">
+    <h3>Termo de Uso – ProScala</h3>
+    <p><b>Finalidade:</b> controle administrativo interno de sobreaviso, chamados, exames e relatórios.</p>
+    <p><b>Responsabilidade:</b> os dados inseridos são de responsabilidade do usuário operador e do setor emissor.</p>
+    <p><b>Limites:</b> este sistema não substitui prontuário eletrônico, faturamento hospitalar, HIS/RIS/PACS ou sistemas legais.</p>
+    <p>Ao prosseguir, o usuário declara estar autorizado pela instituição.</p>
+    <div class="row" style="margin-top:12px;justify-content:flex-end">
+      <button class="btn-primary" onclick="App.acceptTerm()">Li e aceito</button>
+    </div>
+  </div>
+</div>
+
+<!-- SOBRE -->
+<div id="sobreModal" class="modalMask">
+  <div class="modal" style="max-width:620px">
+    <h3>Sobre o ProScala</h3>
+    <p><b>Produto:</b> ProScala – Gestão de Sobreaviso (Radiologia)</p>
+    <p><b>Versão:</b> 1.1.4 (Nível 1 – Departamental Premium)</p>
+    <p><b>Desenvolvido por:</b> Willtech Soluções Digitais</p>
+    <p><b>Suporte:</b> WhatsApp (47) 98908-8181 • suporteproscala@gmail.com</p>
+    <p><b>Licença:</b> uso institucional conforme contrato.</p>
+    <div class="row" style="margin-top:12px;justify-content:flex-end">
+      <button class="btn-danger" onclick="UI.hide('sobreModal')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ASSINATURA -->
+<div id="signModal" class="modalMask">
+  <div class="modal" style="max-width:520px">
+    <h3>Assinatura Digital</h3>
+    <p class="meta">Assine com o mouse ou toque. Clique em “Salvar assinatura” para aplicar nos documentos.</p>
+    <canvas id="signCanvas" width="460" height="200" style="border:1px solid #000;border-radius:8px;touch-action:none"></canvas>
+    <div class="row" style="margin-top:12px;justify-content:flex-end">
+      <button class="btn-ghost" onclick="Sign.clear()">Limpar</button>
+      <button class="btn-success" onclick="Sign.save()">Salvar assinatura</button>
+    </div>
+  </div>
+</div>
+
+<div class="container" id="app">
+  <header class="top">
+    <div class="btnbar">
+      <button class="btn-dark" onclick="UI.show('sobreModal')">Sobre</button>
+      <button class="btn-ghost" onclick="Export.downloadCSV()">Exportar (Excel/Power BI)</button>
+    </div>
+
+    <div class="brand">
+      <div class="meta">Documento Oficial • Versão 1.1.4 • Uso Institucional</div>
+      <div class="logoRow">
+        <div class="logoMark" aria-label="ProScala"><span>P</span></div>
+        <div>
+          <h1 id="brandName">ProScala</h1>
+          <div class="brandSlogan">
+            <span class="pill">Premium</span>
+            <span id="brandSloganText">Escalas e Sobreaviso com Controle Total</span>
+          </div>
+        </div>
+      </div>
+      <small id="brandDesc">Gestão de Sobreaviso – Radiologia</small>
+    </div>
+
+    <div class="btnbar">
+      <button class="btn-warning" onclick="Backup.download()">Backup</button>
+      <button class="btn-ghost" onclick="Reports.generatePDF('report')">📄 Gerar PDF (Relatório)</button>
+      <button class="btn-ghost" onclick="Reports.generatePDF('requisicoes')">📄 Gerar PDF (Requisições)</button>
+      <button class="btn-success" onclick="document.getElementById('fileInput').click()">Restaurar</button>
+      <button class="btn-dark" onclick="Reports.printReport()">Imprimir Relatório</button>
+      <button class="btn-primary" onclick="Reports.printRequisicoes()">Imprimir Requisições</button>
+      <input type="file" id="fileInput" hidden accept="application/json" />
+    </div>
+  </header>
+
+  <div class="section">
+    <h2>Configuração Institucional / White-label</h2>
+    <div class="grid">
+      <div><label>Hospital / Instituição</label><input id="cfg_hospital" /></div>
+      <div><label>CNPJ</label><input id="cfg_cnpj" /></div>
+      <div><label>Nome do Sistema</label><input id="cfg_sysname" placeholder="ProScala" /></div>
+      <div><label>Subtítulo</label><input id="cfg_sysdesc" placeholder="Gestão de Sobreaviso – Radiologia" /></div>
+      <div><label>Profissional</label><input id="cfg_prof" /></div>
+      <div><label>Matrícula</label><input id="cfg_mat" /></div>
+      <div><label>Usar controle de KM</label>
+        <select id="cfg_useKm"><option value="1">Sim</option><option value="0">Não</option></select>
+      </div>
+      <div><label>Assinatura Digital</label>
+        <select id="cfg_useSign"><option value="0">Não</option><option value="1">Sim</option></select>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Parâmetros Financeiros</h2>
+    <div class="grid">
+      <div><label>Valor Hora Trabalhada (R$)</label><input type="number" step="0.01" id="val_hora" /></div>
+      <div><label>Valor Hora Sobreaviso (R$)</label><input type="number" step="0.01" id="val_sobre" /></div>
+      <div><label>Valor por KM (R$)</label><input type="number" step="0.01" id="val_km" /></div>
+      <div><label>Adicional (%)</label><input type="number" step="1" id="val_add" /></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Escalas de Sobreaviso</h2>
+    <div class="grid">
+      <div><label>Data Início</label><input type="date" id="esc_d1" /></div>
+      <div><label>Hora Início</label><input type="time" id="esc_h1" /></div>
+      <div><label>Data Fim</label><input type="date" id="esc_d2" /></div>
+      <div><label>Hora Fim</label><input type="time" id="esc_h2" /></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn-primary" id="btnEscSave" onclick="Escalas.save()">Adicionar Escala</button> <button class="btn-ghost" id="btnEscCancel" onclick="Escalas.cancel()" style="display:none">Cancelar edição</button>
+    </div>
+    <table id="tblEscalas">
+      <thead><tr><th>Início</th><th>Fim</th><th>Tempo</th><th>Ações</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Chamados</h2>
+    <div class="filterbar">
+      <div class="chips" id="ch_chips"></div>
+      <div class="searchbox"><input id="ch_q" placeholder="Buscar (setor)..." /></div>
+    </div>
+    <div class="kpiRow" id="ch_kpis"></div>
+
+    <div class="grid">
+      <div><label>Data</label><input type="date" id="ch_data" /></div>
+      <div><label>Hora Chegada</label><input type="time" id="ch_in" /></div>
+      <div><label>Hora Saída</label><input type="time" id="ch_out" /></div>
+      <div><label>KM Rodado</label><input type="number" step="0.1" id="ch_km" /></div>
+      <div><label>Setor</label><input id="ch_setor" /></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn-success" id="btnChSave" onclick="Chamados.save()">Adicionar Chamado</button> <button class="btn-ghost" id="btnChCancel" onclick="Chamados.cancel()" style="display:none">Cancelar edição</button>
+    </div>
+    <table id="tblChamados">
+      <thead><tr><th>Data</th><th>Chegada</th><th>Saída</th><th>Tempo</th><th>KM</th><th>Setor</th><th>Ações</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Exames Realizados</h2>
+    <div class="filterbar">
+      <div class="chips" id="ex_chips"></div>
+      <div class="searchbox"><input id="ex_q" placeholder="Buscar (exame/paciente/setor)..." /></div>
+    </div>
+    <div class="kpiRow" id="ex_kpis"></div>
+
+    <div class="grid">
+      <div><label>Data</label><input type="date" id="ex_data" /></div>
+      <div><label>Hora</label><input type="time" id="ex_hora" /></div>
+      <div><label>Setor</label><input id="ex_setor" /></div>
+      <div><label>Exame</label><input id="ex_nome" /></div>
+      <div><label>Paciente</label><input id="ex_paciente" /></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn-primary" id="btnExSave" onclick="Exames.save()">Adicionar Exame</button> <button class="btn-ghost" id="btnExCancel" onclick="Exames.cancel()" style="display:none">Cancelar edição</button>
+    </div>
+    <table id="tblExames">
+      <thead><tr><th>Data</th><th>Hora</th><th>Setor</th><th>Exame</th><th>Paciente</th><th>Ações</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Resumo Operacional</h2>
+    <div class="preview" id="preview"></div>
+  </div>
+</div>
+
+<!-- IMPRESSÃO: RELATÓRIO -->
+<div id="print-relatorio">
+  <header>
+    <div class="topline">
+      <div><b>Protocolo:</b> <span id="r_protocolo"></span></div>
+      <div><b>Gerado em:</b> <span id="r_datahora"></span></div>
+    </div>
+    <h1 id="r_hospital"></h1>
+    <h2>Relatório de Sobreaviso e Atividade – ProScala</h2>
+  </header>
+
+  <div class="grid2">
+    <div class="box"><b>Profissional:</b> <span id="r_prof"></span><br><b>Matrícula:</b> <span id="r_mat"></span></div>
+    <div class="box"><b>Período da(s) escala(s):</b><br><span id="r_periodo"></span></div>
+  </div>
+
+  <div class="box" style="margin-top:10px">
+    <b>Resumo Operacional</b><br><br>
+    Sobreaviso: <span id="r_sobre"></span><br>
+    Horas trabalhadas: <span id="r_trab"></span><br>
+    KM rodado: <span id="r_km"></span>
+  </div>
+
+  <div class="box" style="margin-top:10px">
+    <b>Resumo Financeiro</b><br><br>
+    <span id="r_fin"></span>
+  </div>
+
+  <footer>
+    <div style="margin-top:8px">Este relatório possui validade administrativa interna. A autenticidade das informações é de responsabilidade do setor emissor.</div>
+    <div style="margin-top:8px"><b>Desenvolvido por:</b> Willtech Soluções Digitais • <b>Suporte:</b> WhatsApp (47) 98908-8181 • suporteproscala@gmail.com</div>
+
+    <div class="assinaturas">
+      <div class="sigBox" id="sig_prof_box">
+        <div id="sig_prof_img"></div>
+        Assinatura do Profissional
+      </div>
+      <div class="sigBox">
+        Assinatura do Setor
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- IMPRESSÃO: REQUISIÇÕES -->
+<div id="print-fichas"></div>
+
+<script>
+  // ============================
+  // PDF 100% OFFLINE (ProPDF) – sem depender do imprimir do navegador
+  // Biblioteca embutida no pacote (Nível 1) com API compatível (jsPDF-like)
+  // ============================
+  const PDF = (() => {
+    const MM_TO_PT = 72 / 25.4;
+    const A4_W = 210, A4_H = 297;
+
+    const esc = (s) => String(s ?? '')
+      .replace(/\\/g,'\\\\')
+      .replace(/\(/g,'\\(')
+      .replace(/\)/g,'\\)')
+      .replace(/\r?\n/g,' ');
+
+    function mm(x){ return (x * MM_TO_PT).toFixed(2); }
+    function ypt(yTopMm){ return ((A4_H - yTopMm) * MM_TO_PT).toFixed(2); }
+
+    function wrapText(text, maxWidthMm, fontSizePt){
+      const words = String(text ?? '').split(/\s+/).filter(Boolean);
+      if(!words.length) return [''];
+      const avgCharPt = fontSizePt * 0.52;
+      const maxPt = maxWidthMm * MM_TO_PT;
+      let line = '';
+      const lines = [];
+      for(const w of words){
+        const candidate = line ? (line + ' ' + w) : w;
+        const estPt = candidate.length * avgCharPt;
+        if(estPt <= maxPt || !line){
+          line = candidate;
+        } else {
+          lines.push(line);
+          line = w;
+        }
+      }
+      if(line) lines.push(line);
+      return lines;
+    }
+
+    class Doc {
+      constructor(){
+        this.pages = [];
+        this._fontBold = false;
+        this._fontSize = 10;
+        this._fill = {r:0,g:0,b:0};
+        this._stroke = {r:0,g:0,b:0};
+        this._newPage();
+      }
+      _newPage(){
+        this.pages.push({ops: []});
+        this.p = this.pages[this.pages.length - 1];
+      }
+      // jsPDF-like API
+      addPage(){ this._newPage(); return this; }
+      setFont(_family, style){ this._fontBold = (String(style||'').toLowerCase()==='bold'); return this; }
+      setFontSize(n){ this._fontSize = Number(n)||10; return this; }
+      setTextColor(){ return this; } // no-op
+      setDrawColor(){ return this; } // no-op
+      setLineWidth(){ return this; } // no-op
+      setFillColor(r,g,b){ this._fill = {r:+r||0,g:+g||0,b:+b||0}; return this; }
+      rect(x,y,w,h,mode){
+        const x0 = mm(x), y0 = ypt(y + h), ww = mm(w), hh = mm(h);
+        // set fill color before fill
+        if(mode === 'F'){
+          this.p.ops.push(`${(this._fill.r/255).toFixed(3)} ${(this._fill.g/255).toFixed(3)} ${(this._fill.b/255).toFixed(3)} rg`);
+          this.p.ops.push(`${x0} ${y0} ${ww} ${hh} re f`);
+        } else {
+          this.p.ops.push(`${x0} ${y0} ${ww} ${hh} re S`);
+        }
+        return this;
+      }
+      line(x1,y1,x2,y2){
+        this.p.ops.push(`${mm(x1)} ${ypt(y1)} m ${mm(x2)} ${ypt(y2)} l S`);
+        return this;
+      }
+      text(txt, x, y, opts){
+        const align = opts?.align || null;
+        if(align === 'right'){
+          return this._textRight(txt, x, y);
+        }
+        return this._text(txt, x, y);
+      }
+      _text(txt, x, y){
+        const font = this._fontBold ? '/F2' : '/F1';
+        const t = esc(txt);
+        this.p.ops.push(`BT ${font} ${this._fontSize} Tf ${mm(x)} ${ypt(y)} Td (${t}) Tj ET`);
+        return this;
+      }
+      _textRight(txt, xRight, y){
+        const avgCharMm = (this._fontSize * 0.3528) * 0.52;
+        const w = String(txt ?? '').length * avgCharMm;
+        const x = Math.max(0, xRight - w);
+        return this._text(txt, x, y);
+      }
+      splitTextToSize(text, maxWidthMm){
+        return wrapText(text, maxWidthMm, this._fontSize);
+      }
+      addImage(){ return this; } // assinatura embutida no PDF direto fica opcional (mantemos no print)
+      save(filename){
+        const parts = [];
+        const offsets = [];
+        const pushObj = (n, body) => {
+          offsets[n] = parts.join('').length;
+          parts.push(`${n} 0 obj\n${body}\nendobj\n`);
+        };
+
+        // Fonts
+        pushObj(3, `<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>`);
+        pushObj(4, `<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>`);
+
+        // Contents
+        const contentObjNums = [];
+        let objN = 5;
+        for(const pg of this.pages){
+          const stream = (pg.ops.join('\n') + '\n');
+          const len = new TextEncoder().encode(stream).length;
+          pushObj(objN, `<< /Length ${len} >>\nstream\n${stream}endstream`);
+          contentObjNums.push(objN);
+          objN += 1;
+        }
+
+        // Page objects
+        const pageObjNums = [];
+        for(let i=0;i<this.pages.length;i++){
+          const cObj = contentObjNums[i];
+          const pNum = objN++;
+          pageObjNums.push(pNum);
+          pushObj(pNum, `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${mm(A4_W)} ${mm(A4_H)}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${cObj} 0 R >>`);
+        }
+
+        // Pages root
+        const kids = pageObjNums.map(n => `${n} 0 R`).join(' ');
+        pushObj(2, `<< /Type /Pages /Count ${pageObjNums.length} /Kids [${kids}] >>`);
+
+        // Catalog
+        pushObj(1, `<< /Type /Catalog /Pages 2 0 R >>`);
+
+        const header = `%PDF-1.4\n%âãÏÓ\n`;
+        let body = header + parts.join('');
+        const xrefStart = body.length;
+        const maxObj = offsets.length - 1;
+
+        let xref = `xref\n0 ${maxObj+1}\n`;
+        xref += `0000000000 65535 f \n`;
+        for(let i=1;i<=maxObj;i++){
+          const off = (offsets[i] ?? 0) + header.length;
+          xref += String(off).padStart(10,'0') + ` 00000 n \n`;
+        }
+        const trailer = `trailer\n<< /Size ${maxObj+1} /Root 1 0 R >>\nstartxref\n${xrefStart}\n%%EOF`;
+
+        const pdf = body + xref + trailer;
+        const blob = new Blob([pdf], {type:'application/pdf'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+      }
+    }
+
+    return {
+      async ensure(){ return true; }, // compat
+      Doc,
+      textWrap(doc, text, x, y, maxWidth, lineHeight){
+        const lines = doc.splitTextToSize(text, maxWidth);
+        lines.forEach((l,i)=>doc.text(l, x, y + i*lineHeight));
+        return y + (lines.length-1)*lineHeight;
+      }
+    };
+  })();
+
+  // ============================
+  //  ProScala – Core (Nível 1)
+  // ============================
+
+  const UI = {
+    el: (id) => document.getElementById(id),
+    show: (id) => { const e = UI.el(id); if(e) e.style.display = 'flex'; },
+    hide: (id) => { const e = UI.el(id); if(e) e.style.display = 'none'; },
+    fmtDateBR: (iso) => iso ? iso.split('-').reverse().join('/') : '',
+    money: (v) => (Number(v)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}),
+    fmtMin: (m) => `${Math.floor(m/60)}h ${m%60}m`,
+  };
+  UI.buildChips = (holderId, setores, active, onPick) => {
+    const el = UI.el(holderId);
+    if(!el) return;
+    const all = ['TODOS', ...setores];
+    el.innerHTML = all.map(s => {
+      const k = s === 'TODOS' ? '__ALL__' : s;
+      const cls = (active === k) ? 'chip active' : 'chip';
+      return `<div class="${cls}" data-k="${k}">${s}</div>`;
+    }).join('');
+    el.querySelectorAll('.chip').forEach(c=>{
+      c.addEventListener('click', ()=> onPick(c.getAttribute('data-k')));
+    });
+  };
+  UI.kpi = (t,v,s='') => `<div class="kpi"><div class="t">${t}</div><div class="v">${v}</div>${s?`<div class="s">${s}</div>`:''}</div>`;
+
+
+  const Storage = {
+    KEY_DB: 'proscala_db_v1',
+    KEY_LIC: 'proscala_lic',
+    KEY_USER: 'proscala_user',
+    KEY_TERM: 'proscala_term_accepted',
+    KEY_VIEW: 'proscala_view_v2',
+    KEY_UI: 'proscala_ui_v1',
+    getDB: () => {
+      const raw = localStorage.getItem(Storage.KEY_DB);
+      if(!raw) return null;
+      try { return JSON.parse(raw); } catch { return null; }
+    },
+    setDB: (db) => localStorage.setItem(Storage.KEY_DB, JSON.stringify(db)),
+  };
+
+  const License = {
+    REQUIRED_KEY: 'PROSCALA-N1-2026',
+    ensure: () => {
+      const k = localStorage.getItem(Storage.KEY_LIC);
+      if(k !== License.REQUIRED_KEY) UI.show('licModal');
+    },
+    activate: () => {
+      const v = UI.el('licKeyInput').value.trim();
+      localStorage.setItem(Storage.KEY_LIC, v);
+      location.reload();
+    }
+  };
+
+  const App = {
+    view:{ ch_setor:'__ALL__', ex_setor:'__ALL__', ch_q:'', ex_q:'' },
+    db: {
+      meta:{product:'ProScala',version:'1.1.4',build:'2026-01-30',vendor:'Willtech Soluções Digitais'},
+      hospital:'', cnpj:'',
+      whiteLabel:{name:'ProScala', desc:'Gestão de Sobreaviso – Radiologia'},
+      profissional:{nome:'', matricula:''},
+      config:{useKm:true, useSign:false},
+      valores:{hora:0, sobre:0, km:0, add:0},
+      users:[{u:'admin',p:'1234',role:'admin'}],
+      assinatura:'',
+      escalas:[], chamados:[], exames:[],
+      relatorios:0
+    },
+
+    init: () => {
+      License.ensure();
+
+      const saved = Storage.getDB();
+      if(saved) App.db = App.migrate(saved);
+
+      UI.el('fileInput').addEventListener('change', Backup.restore);
+
+      const autos = [
+        'cfg_hospital','cfg_cnpj','cfg_sysname','cfg_sysdesc','cfg_prof','cfg_mat',
+        'cfg_useKm','cfg_useSign','val_hora','val_sobre','val_km','val_add'
+      ];
+      autos.forEach(id => UI.el(id).addEventListener('input', () => { App.readConfigFromUI(); App.render(); }));
+      ['cfg_useKm','cfg_useSign'].forEach(id => UI.el(id).addEventListener('change', () => { App.readConfigFromUI(); App.render(); }));
+
+      if(!localStorage.getItem(Storage.KEY_USER)) UI.show('loginModal');
+      if(!localStorage.getItem(Storage.KEY_TERM)) UI.show('termoModal');
+
+      App.writeConfigToUI();
+
+      // Preferências de visualização (por setor)
+      const chGroup = UI.el('ch_group');
+      const exGroup = UI.el('ex_group');
+      try{
+        const uiRaw = localStorage.getItem(Storage.KEY_UI);
+        if(uiRaw){
+          const u = JSON.parse(uiRaw);
+          if(chGroup && typeof u.ch_group === 'boolean') chGroup.checked = u.ch_group;
+          if(exGroup && typeof u.ex_group === 'boolean') exGroup.checked = u.ex_group;
+        }
+      }catch{}
+      const saveUI = () => {
+        try{
+          localStorage.setItem(Storage.KEY_UI, JSON.stringify({
+            ch_group: !!chGroup?.checked,
+            ex_group: !!exGroup?.checked
+          }));
+        }catch{}
+      };
+      if(chGroup) chGroup.addEventListener('change', ()=>{ saveUI(); App.render(); });
+      if(exGroup) exGroup.addEventListener('change', ()=>{ saveUI(); App.render(); });
+
+      App.render();
+
+      if('serviceWorker' in navigator){
+        navigator.serviceWorker.register('sw.js').catch(()=>{});
+      }
+    },
+
+    acceptTerm: () => {
+      localStorage.setItem(Storage.KEY_TERM,'1');
+      UI.hide('termoModal');
+    },
+
+    migrate: (db) => {
+      const base = App.db;
+      const out = JSON.parse(JSON.stringify(base));
+      out.hospital = db.hospital ?? out.hospital;
+      out.cnpj = db.cnpj ?? out.cnpj;
+      out.whiteLabel = db.whiteLabel ?? out.whiteLabel;
+      out.profissional = db.profissional ?? {nome: db.prof||'', matricula: db.mat||''};
+      out.config = db.config ?? out.config;
+      out.valores = db.valores ?? out.valores;
+      out.users = db.users ?? out.users;
+      out.assinatura = db.assinatura ?? out.assinatura;
+      out.escalas = Array.isArray(db.escalas) ? db.escalas : out.escalas;
+      out.chamados = Array.isArray(db.chamados) ? db.chamados : (Array.isArray(db.corridas) ? db.corridas : out.chamados);
+      out.exames = Array.isArray(db.exames) ? db.exames : out.exames;
+      out.relatorios = db.relatorios ?? out.relatorios;
+      return out;
+    },
+
+    save: () => Storage.setDB(App.db),
+
+    readConfigFromUI: () => {
+      const db = App.db;
+      db.hospital = UI.el('cfg_hospital').value.trim();
+      db.cnpj = UI.el('cfg_cnpj').value.trim();
+      db.whiteLabel.name = (UI.el('cfg_sysname').value.trim() || 'ProScala');
+      db.whiteLabel.desc = (UI.el('cfg_sysdesc').value.trim() || 'Gestão de Sobreaviso – Radiologia');
+      db.profissional.nome = UI.el('cfg_prof').value.trim();
+      db.profissional.matricula = UI.el('cfg_mat').value.trim();
+      db.config.useKm = UI.el('cfg_useKm').value === '1';
+      db.config.useSign = UI.el('cfg_useSign').value === '1';
+      db.valores.hora = Number(UI.el('val_hora').value||0);
+      db.valores.sobre = Number(UI.el('val_sobre').value||0);
+      db.valores.km = Number(UI.el('val_km').value||0);
+      db.valores.add = Number(UI.el('val_add').value||0);
+
+      UI.el('brandName').innerText = db.whiteLabel.name;
+      UI.el('brandDesc').innerText = db.whiteLabel.desc;
+
+      App.save();
+    },
+
+    writeConfigToUI: () => {
+      const db = App.db;
+      UI.el('cfg_hospital').value = db.hospital || '';
+      UI.el('cfg_cnpj').value = db.cnpj || '';
+      UI.el('cfg_sysname').value = db.whiteLabel?.name || 'ProScala';
+      UI.el('cfg_sysdesc').value = db.whiteLabel?.desc || 'Gestão de Sobreaviso – Radiologia';
+      UI.el('cfg_prof').value = db.profissional?.nome || '';
+      UI.el('cfg_mat').value = db.profissional?.matricula || '';
+      UI.el('cfg_useKm').value = db.config?.useKm ? '1' : '0';
+      UI.el('cfg_useSign').value = db.config?.useSign ? '1' : '0';
+      UI.el('val_hora').value = db.valores?.hora ?? 0;
+      UI.el('val_sobre').value = db.valores?.sobre ?? 0;
+      UI.el('val_km').value = db.valores?.km ?? 0;
+      UI.el('val_add').value = db.valores?.add ?? 0;
+
+      UI.el('brandName').innerText = db.whiteLabel?.name || 'ProScala';
+      UI.el('brandDesc').innerText = db.whiteLabel?.desc || 'Gestão de Sobreaviso – Radiologia';
+    },
+
+    calcMinutes: (start, end) => {
+      if(!start || !end) return 0;
+      const [h1,m1] = start.split(':').map(Number);
+      const [h2,m2] = end.split(':').map(Number);
+      let d = (h2*60+m2) - (h1*60+m1);
+      return d < 0 ? d + 1440 : d;
+    },
+
+    render: () => {
+      const db = App.db;
+      const view = App.view || { ch_setor:'__ALL__', ex_setor:'__ALL__', ch_q:'', ex_q:'' };
+
+      const tbEsc = UI.el('tblEscalas').tBodies[0];
+      const tbCha = UI.el('tblChamados').tBodies[0];
+      const tbExa = UI.el('tblExames').tBodies[0];
+
+      let te=0, tt=0, tk=0;
+
+      tbEsc.innerHTML = db.escalas.map((e, idx) => {
+        te += e.mins;
+        const ini = `${UI.fmtDateBR(e.d1)} ${e.h1}`;
+        const fim = `${UI.fmtDateBR(e.d2)} ${e.h2}`;
+        return `<tr>
+          <td>${ini}</td>
+          <td>${fim}</td>
+          <td>${UI.fmtMin(e.mins)}</td>
+          <td><button class="mini" style="background:var(--warning);color:#fff" onclick="Escalas.edit(${idx})">Editar</button><button class="mini" style="background:var(--danger);color:#fff" onclick="Escalas.del(${idx})">Excluir</button></td>
+        </tr>`;
+      }).join('');
+
+      // Chamados: lista ou agrupado por setor
+      const chAgrupar = !!UI.el('ch_group')?.checked;
+      const chamadosOrd = [...db.chamados].sort((a,b)=>(a.d||'').localeCompare(b.d||'') || (a.setor||'').localeCompare(b.setor||'') || (a.i||'').localeCompare(b.i||''));
+      if(!chAgrupar){
+        tbCha.innerHTML = chamadosOrd.map((c, idx) => {
+          tt += (c.mins||0); tk += Number(c.km||0);
+          return `<tr>
+            <td>${UI.fmtDateBR(c.d)}</td>
+            <td>${c.i||''}</td>
+            <td>${c.o||''}</td>
+            <td>${UI.fmtMin(c.mins||0)}</td>
+            <td>${Number(c.km||0).toFixed(1)}</td>
+            <td>${(c.setor||'').toUpperCase()}</td>
+            <td>
+              <button class="mini" style="background:orange;color:#fff" onclick="Chamados.edit(${db.chamados.indexOf(c)})">Editar</button>
+              <button class="mini" style="background:var(--danger);color:#fff" onclick="Chamados.del(${db.chamados.indexOf(c)})">Excluir</button>
+            </td>
+          </tr>`;
+        }).join('');
+      } else {
+        const groups = {};
+        chamadosOrd.forEach(c=>{
+          const k = (c.setor||'SEM SETOR').toUpperCase();
+          (groups[k] ||= []).push(c);
+        });
+        const setores = Object.keys(groups).sort((a,b)=>a.localeCompare(b));
+        let out = '';
+        setores.forEach(setor=>{
+          const items = groups[setor];
+          const minsSet = items.reduce((a,c)=>a+(c.mins||0),0);
+          const kmSet = items.reduce((a,c)=>a+Number(c.km||0),0);
+          out += `<tr class="group-row"><td colspan="7">SETOR: ${setor} — ${UI.fmtMin(minsSet)} • ${kmSet.toFixed(1)} km</td></tr>`;
+          items.forEach((c)=>{
+            tt += (c.mins||0); tk += Number(c.km||0);
+            const idx = db.chamados.indexOf(c);
+            out += `<tr class="group-sub">
+              <td>${UI.fmtDateBR(c.d)}</td>
+              <td>${c.i||''}</td>
+              <td>${c.o||''}</td>
+              <td>${UI.fmtMin(c.mins||0)}</td>
+              <td>${Number(c.km||0).toFixed(1)}</td>
+              <td>${setor}</td>
+              <td>
+                <button class="mini" style="background:orange;color:#fff" onclick="Chamados.edit(${db.chamados.indexOf(c)})">Editar</button>
+                <button class="mini" style="background:var(--danger);color:#fff" onclick="Chamados.del(${db.chamados.indexOf(c)})">Excluir</button>
+              </td>
+            </tr>`;
+          });
+        });
+        tbCha.innerHTML = out;
+      }
+
+      // Exames: lista ou agrupado por setor
+      const exAgrupar = !!UI.el('ex_group')?.checked;
+      const examesOrd = [...db.exames].sort((a,b)=>(a.data||'').localeCompare(b.data||'') || (a.setor||'').localeCompare(b.setor||'') || (a.hora||'').localeCompare(b.hora||''));
+      if(!exAgrupar){
+        tbExa.innerHTML = examesOrd.map((e, idx) => {
+          return `<tr>
+            <td>${UI.fmtDateBR(e.data)}</td>
+            <td>${e.hora||''}</td>
+            <td>${(e.setor||'').toUpperCase()}</td>
+            <td>${(e.exame||'').toUpperCase()}</td>
+            <td>${(e.paciente||'').toUpperCase()}</td>
+            <td>
+              <button class="mini" style="background:orange;color:#fff" onclick="Exames.edit(${db.exames.indexOf(e)})">Editar</button>
+              <button class="mini" style="background:var(--danger);color:#fff" onclick="Exames.del(${db.exames.indexOf(e)})">Excluir</button>
+            </td>
+          </tr>`;
+        }).join('');
+      } else {
+        const groups = {};
+        examesOrd.forEach(e=>{
+          const k = (e.setor||'SEM SETOR').toUpperCase();
+          (groups[k] ||= []).push(e);
+        });
+        const setores = Object.keys(groups).sort((a,b)=>a.localeCompare(b));
+        let out = '';
+        setores.forEach(setor=>{
+          const items = groups[setor];
+          out += `<tr class="group-row"><td colspan="6">SETOR: ${setor} — ${items.length} exame(s)</td></tr>`;
+          items.forEach((e)=>{
+            const idx = db.exames.indexOf(e);
+            out += `<tr class="group-sub">
+              <td>${UI.fmtDateBR(e.data)}</td>
+              <td>${e.hora||''}</td>
+              <td>${setor}</td>
+              <td>${(e.exame||'').toUpperCase()}</td>
+              <td>${(e.paciente||'').toUpperCase()}</td>
+              <td>
+                <button class="mini" style="background:orange;color:#fff" onclick="Exames.edit(${db.exames.indexOf(e)})">Editar</button>
+                <button class="mini" style="background:var(--danger);color:#fff" onclick="Exames.del(${db.exames.indexOf(e)})">Excluir</button>
+              </td>
+            </tr>`;
+          });
+        });
+        tbExa.innerHTML = out;
+      }
+
+      const vTrab = (tt/60) * (db.valores.hora||0);
+      const vSobre = (te/60) * (db.valores.sobre||0);
+      const vKm = db.config.useKm ? (tk * (db.valores.km||0)) : 0;
+      const subtotal = vTrab + vSobre + vKm;
+      const vAdd = subtotal * ((db.valores.add||0)/100);
+      const total = subtotal + vAdd;
+
+      UI.el('preview').innerHTML =
+        `Sobreaviso: ${UI.fmtMin(te)} (${UI.money(vSobre)})<br>`+
+        `Trabalhado: ${UI.fmtMin(tt)} (${UI.money(vTrab)})<br>`+
+        `KM: ${tk.toFixed(1)} (${UI.money(vKm)})<br>`+
+        `<span style="font-size:1.02rem">Total: ${UI.money(total)}</span>`;
+
+      App.save();
+    }
+  };
+
+  const Auth = {
+    login: () => {
+      const u = UI.el('lg_user').value.trim();
+      const p = UI.el('lg_pass').value;
+      const ok = App.db.users.find(x => x.u === u && x.p === p);
+      if(!ok) return alert('Usuário ou senha inválidos');
+      localStorage.setItem(Storage.KEY_USER, u);
+      UI.hide('loginModal');
+    }
+  };
+
+  const Backup = {
+    download: () => {
+      const blob = new Blob([JSON.stringify(App.db, null, 2)], {type:'application/json'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `proscala_backup_${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+    },
+    restore: (evt) => {
+      const file = evt.target.files?.[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try{
+          const obj = JSON.parse(e.target.result);
+          Storage.setDB(obj);
+          location.reload();
+        }catch{
+          alert('Arquivo inválido.');
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  const Escalas = {
+    editIndex: null,
+    save: () => {
+      const d1 = UI.el('esc_d1').value;
+      const h1 = UI.el('esc_h1').value;
+      const d2 = UI.el('esc_d2').value;
+      const h2 = UI.el('esc_h2').value;
+      if(!d1||!h1||!d2||!h2) return alert('Preencha data e hora de início e fim da escala.');
+
+      const start = new Date(`${d1}T${h1}`);
+      const end = new Date(`${d2}T${h2}`);
+      const mins = Math.floor((end - start)/60000);
+      if(!isFinite(mins) || mins <= 0) return alert('Período da escala inválido.');
+
+      const item = {d1,h1,d2,h2,mins};
+      if(Escalas.editIndex === null){
+        App.db.escalas.push(item);
+      } else {
+        App.db.escalas[Escalas.editIndex] = item;
+      }
+      Escalas.cancel(true);
+      App.render();
+    },
+    edit: (idx) => {
+      const e = App.db.escalas[idx];
+      if(!e) return;
+      Escalas.editIndex = idx;
+      UI.el('esc_d1').value = e.d1;
+      UI.el('esc_h1').value = e.h1;
+      UI.el('esc_d2').value = e.d2;
+      UI.el('esc_h2').value = e.h2;
+      UI.el('btnEscSave').innerText = 'Atualizar Escala';
+      UI.el('btnEscCancel').style.display = 'inline-block';
+      window.scrollTo({top: document.getElementById('tblEscalas').offsetTop - 180, behavior:'smooth'});
+    },
+    cancel: (silent=false) => {
+      Escalas.editIndex = null;
+      UI.el('btnEscSave').innerText = 'Adicionar Escala';
+      UI.el('btnEscCancel').style.display = 'none';
+      if(!silent){
+        UI.el('esc_d1').value = '';
+        UI.el('esc_h1').value = '';
+        UI.el('esc_d2').value = '';
+        UI.el('esc_h2').value = '';
+      }
+    },
+    del: (idx) => {
+      if(!confirm('Excluir esta escala?')) return;
+      App.db.escalas.splice(idx,1);
+      if(Escalas.editIndex === idx) Escalas.cancel(true);
+      App.render();
+    }
+  };
+
+  const Chamados = {
+    editIndex: null,
+    save: () => {
+      const d = UI.el('ch_data').value;
+      const i = UI.el('ch_in').value;
+      const o = UI.el('ch_out').value;
+      const km = Number(UI.el('ch_km').value||0);
+      const setor = (UI.el('ch_setor').value||'').toUpperCase();
+      if(!d||!i||!o) return alert('Preencha data, hora de chegada e hora de saída do chamado.');
+
+      const mins = App.calcMinutes(i,o);
+      if(mins <= 0) return alert('Horários inválidos (saída deve ser após chegada).');
+
+      const item = {d,i,o,mins,km,setor};
+      if(Chamados.editIndex === null){
+        App.db.chamados.push(item);
+      } else {
+        App.db.chamados[Chamados.editIndex] = item;
+      }
+      Chamados.cancel(true);
+      App.render();
+    },
+    edit: (idx) => {
+      const c = App.db.chamados[idx];
+      if(!c) return;
+      Chamados.editIndex = idx;
+      UI.el('ch_data').value = c.d;
+      UI.el('ch_in').value = c.i;
+      UI.el('ch_out').value = c.o;
+      UI.el('ch_km').value = c.km ?? '';
+      UI.el('ch_setor').value = c.setor ?? '';
+      UI.el('btnChSave').innerText = 'Atualizar Chamado';
+      UI.el('btnChCancel').style.display = 'inline-block';
+      window.scrollTo({top: document.getElementById('tblChamados').offsetTop - 180, behavior:'smooth'});
+    },
+    cancel: (silent=false) => {
+      Chamados.editIndex = null;
+      UI.el('btnChSave').innerText = 'Adicionar Chamado';
+      UI.el('btnChCancel').style.display = 'none';
+      if(!silent){
+        UI.el('ch_data').value = '';
+        UI.el('ch_in').value = '';
+        UI.el('ch_out').value = '';
+        UI.el('ch_km').value = '';
+        UI.el('ch_setor').value = '';
+      }
+    },
+    del: (idx) => {
+      if(!confirm('Excluir este chamado?')) return;
+      App.db.chamados.splice(idx,1);
+      if(Chamados.editIndex === idx) Chamados.cancel(true);
+      App.render();
+    }
+  };
+
+  const Exames = {
+    editIndex: null,
+    save: () => {
+      const data = UI.el('ex_data').value;
+      const hora = UI.el('ex_hora').value;
+      const setor = (UI.el('ex_setor').value||'').toUpperCase();
+      const exame = (UI.el('ex_nome').value||'').toUpperCase();
+      const paciente = (UI.el('ex_paciente').value||'').toUpperCase();
+      if(!data || !exame) return alert('Preencha pelo menos Data e Exame.');
+
+      const item = {data,hora,setor,exame,paciente};
+      if(Exames.editIndex === null){
+        App.db.exames.push(item);
+      } else {
+        App.db.exames[Exames.editIndex] = item;
+      }
+      Exames.cancel(true);
+      App.render();
+    },
+    edit: (idx) => {
+      const e = App.db.exames[idx];
+      if(!e) return;
+      Exames.editIndex = idx;
+      UI.el('ex_data').value = e.data;
+      UI.el('ex_hora').value = e.hora ?? '';
+      UI.el('ex_setor').value = e.setor ?? '';
+      UI.el('ex_nome').value = e.exame ?? '';
+      UI.el('ex_paciente').value = e.paciente ?? '';
+      UI.el('btnExSave').innerText = 'Atualizar Exame';
+      UI.el('btnExCancel').style.display = 'inline-block';
+      window.scrollTo({top: document.getElementById('tblExames').offsetTop - 180, behavior:'smooth'});
+    },
+    cancel: (silent=false) => {
+      Exames.editIndex = null;
+      UI.el('btnExSave').innerText = 'Adicionar Exame';
+      UI.el('btnExCancel').style.display = 'none';
+      if(!silent){
+        UI.el('ex_data').value = '';
+        UI.el('ex_hora').value = '';
+        UI.el('ex_setor').value = '';
+        UI.el('ex_nome').value = '';
+        UI.el('ex_paciente').value = '';
+      }
+    },
+    del: (idx) => {
+      if(!confirm('Excluir este exame?')) return;
+      App.db.exames.splice(idx,1);
+      if(Exames.editIndex === idx) Exames.cancel(true);
+      App.render();
+    }
+  };
+
+  const Sign = {
+    ctx: null,
+    drawing: false,
+    init: () => {
+      const canvas = UI.el('signCanvas');
+      Sign.ctx = canvas.getContext('2d');
+      Sign.ctx.lineWidth = 2;
+
+      const point = (e) => {
+        const rect = canvas.getBoundingClientRect();
+        if(e.touches && e.touches[0]){
+          return {x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top};
+        }
+        return {x: e.offsetX, y: e.offsetY};
+      };
+
+      const start = (e) => {
+        Sign.drawing = true;
+        const p = point(e);
+        Sign.ctx.beginPath();
+        Sign.ctx.moveTo(p.x,p.y);
+      };
+      const move = (e) => {
+        if(!Sign.drawing) return;
+        const p = point(e);
+        Sign.ctx.lineTo(p.x,p.y);
+        Sign.ctx.stroke();
+      };
+      const end = () => { Sign.drawing = false; };
+
+      canvas.addEventListener('mousedown', start);
+      canvas.addEventListener('mousemove', move);
+      window.addEventListener('mouseup', end);
+
+      canvas.addEventListener('touchstart', (e)=>{ e.preventDefault(); start(e); }, {passive:false});
+      canvas.addEventListener('touchmove', (e)=>{ e.preventDefault(); move(e); }, {passive:false});
+      canvas.addEventListener('touchend', (e)=>{ e.preventDefault(); end(); }, {passive:false});
+    },
+    clear: () => {
+      const c = UI.el('signCanvas');
+      Sign.ctx.clearRect(0,0,c.width,c.height);
+    },
+    save: () => {
+      const c = UI.el('signCanvas');
+      App.db.assinatura = c.toDataURL('image/png');
+      App.save();
+      UI.hide('signModal');
+      alert('Assinatura salva.');
+    }
+  };
+
+  const Reports = {
+    async generatePDF(tipo){
+      await PDF.ensure();
+      const doc = new PDF.Doc();
+
+      const db = App.db;
+      const now = new Date();
+      const hospital = db.hospital || '—';
+      const prof = db.profissional.nome || '—';
+      const mat = db.profissional.matricula || '—';
+
+      const te = db.escalas.reduce((a,b)=>a+(b.mins||0),0);
+      const tt = db.chamados.reduce((a,b)=>a+(b.mins||0),0);
+      const tk = db.chamados.reduce((a,b)=>a+Number(b.km||0),0);
+
+      const vTrab = (tt/60) * (db.valores.hora||0);
+      const vSobre = (te/60) * (db.valores.sobre||0);
+      const vKm = db.config.useKm ? (tk * (db.valores.km||0)) : 0;
+      const subtotal = vTrab + vSobre + vKm;
+      const vAdd = subtotal * ((db.valores.add||0)/100);
+      const total = subtotal + vAdd;
+
+      const protocolo = Reports.newProtocol();
+
+      const headerBar = () => {
+        doc.setFillColor(11,94,215);
+        doc.rect(0,0,210,18,'F');
+        doc.setTextColor(255,255,255);
+        doc.setFont('helvetica','bold');
+        doc.setFontSize(16);
+        doc.text('ProScala', 12, 12);
+        doc.setFontSize(10);
+        doc.setFont('helvetica','normal');
+        doc.text('Documento Oficial', 160, 12);
+        doc.setTextColor(0,0,0);
+      };
+
+      if(tipo==='report'){
+        headerBar();
+        doc.setFont('helvetica','bold'); doc.setFontSize(14);
+        doc.text(hospital, 12, 30);
+        doc.setFont('helvetica','normal'); doc.setFontSize(11);
+        doc.text('Relatório de Sobreaviso e Atividade', 12, 38);
+
+        doc.setFontSize(10);
+        doc.text(`Protocolo: ${protocolo}`, 12, 46);
+        doc.text(`Gerado em: ${now.toLocaleString('pt-BR')}`, 120, 46);
+
+        doc.setDrawColor(0);
+        doc.rect(12, 52, 186, 20);
+        doc.setFont('helvetica','bold');
+        doc.text('Profissional:', 14, 60);
+        doc.setFont('helvetica','normal');
+        doc.text(`${prof}`, 40, 60);
+        doc.setFont('helvetica','bold');
+        doc.text('Matrícula:', 14, 68);
+        doc.setFont('helvetica','normal');
+        doc.text(`${mat}`, 40, 68);
+
+        const periodo = db.escalas.map(e => `${UI.fmtDateBR(e.d1)} ${e.h1} a ${UI.fmtDateBR(e.d2)} ${e.h2}`).join(' | ') || '—';
+        doc.rect(12, 76, 186, 22);
+        doc.setFont('helvetica','bold'); doc.text('Período:', 14, 84);
+        doc.setFont('helvetica','normal');
+        PDF.textWrap(doc, periodo, 14, 90, 182, 5);
+
+        doc.rect(12, 102, 186, 30);
+        doc.setFont('helvetica','bold'); doc.text('Resumo Operacional', 14, 110);
+        doc.setFont('helvetica','normal');
+        doc.text(`Sobreaviso: ${UI.fmtMin(te)} (${UI.money(vSobre)})`, 14, 118);
+        doc.text(`Trabalhado: ${UI.fmtMin(tt)} (${UI.money(vTrab)})`, 14, 126);
+        doc.text(`KM: ${tk.toFixed(1)} (${UI.money(vKm)})`, 14, 134);
+
+        doc.rect(12, 136, 186, 26);
+        doc.setFont('helvetica','bold'); doc.text('Resumo Financeiro', 14, 144);
+        doc.setFont('helvetica','normal');
+        doc.text(`Subtotal: ${UI.money(subtotal)}`, 14, 152);
+        doc.text(`Adicional: ${UI.money(vAdd)}`, 14, 158);
+        doc.setFont('helvetica','bold');
+        doc.text(`Total: ${UI.money(total)}`, 14, 164);
+
+        doc.setFont('helvetica','normal'); doc.setFontSize(9);
+        doc.text('Desenvolvido por Willtech Soluções Digitais • Suporte WhatsApp (47) 98908-8181 • suporteproscala@gmail.com', 12, 286);
+
+        doc.setFontSize(10);
+        doc.line(12, 250, 90, 250);
+        doc.text('Assinatura do Profissional', 12, 257);
+        doc.line(120, 250, 198, 250);
+        doc.text('Assinatura do Setor', 120, 257);
+
+        if(db.config.useSign && db.assinatura){
+          try{ doc.addImage(db.assinatura,'PNG',12,230,60,18); }catch(e){}
+        }
+
+        doc.save(`ProScala_Relatorio_${protocolo}.pdf`);
+        return;
+      }
+
+      // REQUISIÇÕES
+      headerBar();
+      doc.setFont('helvetica','bold'); doc.setFontSize(13);
+      doc.text(hospital, 12, 30);
+      doc.setFont('helvetica','normal'); doc.setFontSize(11);
+      doc.text('Requisições de Sobreaviso (3 por folha)', 12, 38);
+      doc.setFontSize(10);
+      doc.text(`Gerado em: ${now.toLocaleString('pt-BR')}`, 12, 46);
+
+      const fichaH = 88;
+      const top0 = 54;
+
+      const drawFicha = (c, x, y) => {
+        doc.setDrawColor(0);
+        doc.rect(x, y, 186, fichaH);
+        doc.setFont('helvetica','bold'); doc.setFontSize(11);
+        doc.text('REQUISIÇÃO DE SOBREAVISO – ProScala', x+48, y+8);
+
+        doc.setFont('helvetica','normal'); doc.setFontSize(10);
+        doc.text(`Data: ${UI.fmtDateBR(c.d)}`, x+6, y+18);
+        doc.text(`Prof.: ${prof}`, x+60, y+18);
+        doc.text(`Matr.: ${mat}`, x+150, y+18, {align:'right'});
+
+        doc.text(`Setor: ${c.setor || '—'}`, x+6, y+26);
+        doc.text(`KM: ${Number(c.km||0).toFixed(1)}`, x+150, y+26, {align:'right'});
+
+        doc.text(`Chegada: ${c.i}    Saída: ${c.o}    Tempo: ${UI.fmtMin(c.mins)}`, x+6, y+34);
+
+        doc.rect(x+6, y+40, 174, 22);
+        doc.setFont('helvetica','bold'); doc.text('Exames:', x+8, y+46);
+        doc.setFont('helvetica','normal');
+        const exs = db.exames.filter(e => e.data === c.d).map(e => e.exame).join(', ') || '—';
+        PDF.textWrap(doc, exs, x+8, y+52, 170, 4.6);
+
+        doc.line(x+10, y+80, x+84, y+80);
+        doc.line(x+110, y+80, x+182, y+80);
+        doc.setFontSize(9);
+        doc.text('Assinatura Profissional', x+10, y+86);
+        doc.text('Assinatura Setor', x+110, y+86);
+
+        if(db.config.useSign && db.assinatura){
+          try{ doc.addImage(db.assinatura,'PNG',x+10,y+65,45,13); }catch(e){}
+        }
+      };
+
+      db.chamados.forEach((c, idx) => {
+        const pos = idx % 3;
+        const y = top0 + pos*(fichaH+3);
+        if(idx>0 && pos===0){ doc.addPage(); headerBar(); }
+        drawFicha(c, 12, y);
+      });
+
+      doc.save(`ProScala_Requisicoes_${new Date().toISOString().slice(0,10)}.pdf`);
+    },
+
+    newProtocol: () => {
+      App.db.relatorios = (App.db.relatorios||0) + 1;
+      App.save();
+      return `${new Date().getFullYear()}-${String(App.db.relatorios).padStart(5,'0')}`;
+    },
+
+    printReport: () => {
+      if(App.db.config.useSign && !App.db.assinatura){ UI.show('signModal'); return; }
+
+      const db = App.db;
+      const protocolo = Reports.newProtocol();
+      document.getElementById('r_protocolo').innerText = protocolo;
+      document.getElementById('r_datahora').innerText = new Date().toLocaleString('pt-BR');
+      document.getElementById('r_hospital').innerText = db.hospital || '—';
+      document.getElementById('r_prof').innerText = db.profissional.nome || '—';
+      document.getElementById('r_mat').innerText = db.profissional.matricula || '—';
+
+      const periodo = db.escalas.map(e => `${UI.fmtDateBR(e.d1)} ${e.h1} a ${UI.fmtDateBR(e.d2)} ${e.h2}`).join(' | ') || '—';
+      document.getElementById('r_periodo').innerText = periodo;
+
+      const te = db.escalas.reduce((acc, e) => acc + (e.mins||0), 0);
+      const tt = db.chamados.reduce((acc, c) => acc + (c.mins||0), 0);
+      const tk = db.chamados.reduce((acc, c) => acc + Number(c.km||0), 0);
+
+      const vTrab = (tt/60) * (db.valores.hora||0);
+      const vSobre = (te/60) * (db.valores.sobre||0);
+      const vKm = db.config.useKm ? (tk * (db.valores.km||0)) : 0;
+      const subtotal = vTrab + vSobre + vKm;
+      const vAdd = subtotal * ((db.valores.add||0)/100);
+      const total = subtotal + vAdd;
+
+      document.getElementById('r_sobre').innerText = `${UI.fmtMin(te)} (${UI.money(vSobre)})`;
+      document.getElementById('r_trab').innerText = `${UI.fmtMin(tt)} (${UI.money(vTrab)})`;
+      document.getElementById('r_km').innerText = `${tk.toFixed(1)} (${UI.money(vKm)})`;
+      document.getElementById('r_fin').innerHTML = `<b>Subtotal:</b> ${UI.money(subtotal)}<br><b>Adicional:</b> ${UI.money(vAdd)}<br><b>Total geral:</b> ${UI.money(total)}`;
+
+      const sigHolder = document.getElementById('sig_prof_img');
+      sigHolder.innerHTML = '';
+      if(db.config.useSign && db.assinatura){
+        const img = document.createElement('img');
+        img.src = db.assinatura;
+        sigHolder.appendChild(img);
+      }
+
+      const pr = document.getElementById('print-relatorio');
+      pr.classList.add('active');
+      setTimeout(()=>{ window.print(); pr.classList.remove('active'); }, 350);
+    },
+
+    printRequisicoes: () => {
+      if(App.db.config.useSign && !App.db.assinatura){ UI.show('signModal'); return; }
+
+      const db = App.db;
+      const area = document.getElementById('print-fichas');
+      const hospital = db.hospital || '—';
+      const prof = db.profissional.nome || '—';
+      const mat = db.profissional.matricula || '—';
+
+      area.innerHTML = db.chamados.map((c) => {
+        const exs = db.exames.filter(e => e.data === c.d).map(e => e.exame).join(', ');
+        const sig = (db.config.useSign && db.assinatura)
+          ? `<div style="margin-top:6px"><img src="${db.assinatura}" style="max-height:45px;max-width:100%"></div>`
+          : '';
+
+        return `
+          <div class="ficha">
+            <h3 style="text-align:center;margin:0 0 8px">REQUISIÇÃO DE SOBREAVISO – ProScala</h3>
+            <p style="margin:4px 0"><b>Hospital:</b> ${hospital}</p>
+            <p style="margin:4px 0"><b>Data:</b> ${UI.fmtDateBR(c.d)} | <b>Profissional:</b> ${prof} | <b>Matrícula:</b> ${mat}</p>
+            <p style="margin:4px 0"><b>Setor:</b> ${c.setor || '—'} | <b>KM:</b> ${Number(c.km||0).toFixed(1)}</p>
+            <p style="margin:4px 0"><b>Chegada:</b> ${c.i} | <b>Saída:</b> ${c.o} | <b>Tempo:</b> ${UI.fmtMin(c.mins)}</p>
+            <div style="border:1px solid #000;padding:6px;height:2.5cm;overflow:hidden;font-size:12px"><b>Exames:</b> ${exs || '—'}</div>
+            <div style="margin-top:10px;display:flex;justify-content:space-between;gap:14px;align-items:end">
+              <div style="width:48%;text-align:center;font-size:11px">
+                ${sig}
+                <div style="border-top:1px solid #000;padding-top:6px">Assinatura do Profissional</div>
+              </div>
+              <div style="width:48%;text-align:center;font-size:11px">
+                <div style="border-top:1px solid #000;padding-top:6px;min-height:60px">Assinatura do Setor</div>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+
+      area.classList.add('active');
+      setTimeout(()=>{ window.print(); area.classList.remove('active'); }, 350);
+    }
+  };
+
+  const Export = {
+    downloadCSV: () => {
+      const db = App.db;
+      const rows = [
+        ['Tipo','Data','HoraInicio','HoraFim','Setor','Horas','Minutos','KM','Exame','Paciente','Profissional','Matricula','Hospital','CNPJ']
+      ];
+
+      db.chamados.forEach(c => rows.push([
+        'Chamado', c.d, c.i, c.o, c.setor,
+        (c.mins/60).toFixed(2), String(c.mins), String(Number(c.km||0).toFixed(1)),
+        '', '', db.profissional.nome, db.profissional.matricula, db.hospital, db.cnpj
+      ]));
+
+      db.exames.forEach(e => rows.push([
+        'Exame', e.data, e.hora || '', '', e.setor,
+        '', '', '', e.exame, e.paciente,
+        db.profissional.nome, db.profissional.matricula, db.hospital, db.cnpj
+      ]));
+
+      const csv = rows.map(r => r.map(v => String(v ?? '').replace(/\r?\n/g,' ')).join(';')).join('\n');
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `ProScala_export_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+    }
+  };
+
+  // init signature listeners
+  Sign.init();
+
+  // start app
+  document.addEventListener('DOMContentLoaded', App.init);
+</script>
+</body>
+</html>
